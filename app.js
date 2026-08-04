@@ -662,6 +662,22 @@ document.addEventListener('DOMContentLoaded', () => {
                                         label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(context.parsed.y);
                                     }
                                     return label;
+                                },
+                                afterLabel: function(context) {
+                                    if (context.dataset.label === 'Projected Wealth' && context.parsed.y > 0) {
+                                        const swrPercent = parseFloat(swrNum.value) || 4;
+                                        const swrDecimal = swrPercent / 100;
+                                        const annualAllowance = context.parsed.y * swrDecimal;
+                                        const monthlyAllowance = annualAllowance / 12;
+                                        
+                                        const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+                                        
+                                        return [
+                                            `  • Annual Allowance (${swrPercent}% SWR): ${formatCurrency(annualAllowance)}`,
+                                            `  • Monthly Allowance: ${formatCurrency(monthlyAllowance)}`
+                                        ];
+                                    }
+                                    return null;
                                 }
                             }
                         }
