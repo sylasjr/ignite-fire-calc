@@ -826,26 +826,19 @@ document.addEventListener('DOMContentLoaded', () => {
         
         expatCountrySelect.innerHTML = '<option value="" disabled selected>Loading countries...</option>';
         
-        fetch('https://getwherenext.com/api/data/cost-of-living')
+        fetch('./cost-of-living.json')
             .then(res => {
                 if (!res.ok) throw new Error("HTTP error " + res.status);
                 return res.json();
             })
-            .then(data => {
-                expatCountriesData = data;
+            .then(json => {
+                expatCountriesData = Array.isArray(json) ? json : (json.data || []);
                 populateExpatDropdown();
             })
             .catch(err => {
-                console.warn("Error fetching expat cost of living (using offline fallback):", err);
-                // Load fallback list instead of showing error
+                console.warn("Error fetching local expat cost of living:", err);
                 expatCountriesData = FALLBACK_COUNTRIES;
                 populateExpatDropdown();
-                
-                // Show a brief fallback note in place of error
-                if (expatCostNote) {
-                    expatCostNote.textContent = "Offline mode: loaded popular retirement destinations.";
-                    expatCostNote.style.color = "var(--text-muted)";
-                }
             });
     }
 
