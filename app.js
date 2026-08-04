@@ -673,8 +673,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
                                         
                                         return [
-                                            `  • Annual Allowance (${swrPercent}% SWR): ${formatCurrency(annualAllowance)}`,
-                                            `  • Monthly Allowance: ${formatCurrency(monthlyAllowance)}`
+                                            `  Annual (${swrPercent}%): ${formatCurrency(annualAllowance)}`,
+                                            `  Monthly: ${formatCurrency(monthlyAllowance)}`
                                         ];
                                     }
                                     return null;
