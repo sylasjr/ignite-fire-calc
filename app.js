@@ -932,16 +932,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nameEl) nameEl.textContent = `${flag} ${country.country}`;
         if (descEl) descEl.textContent = `Cost Index relative to global baseline`;
 
-        if (housingVal) housingVal.textContent = `${Math.round(country.rent_index)}/100`;
+        if (housingVal) housingVal.innerHTML = `${Math.round(country.rent_index)}<span class="score-denom">/100</span>`;
         if (housingSub) housingSub.textContent = country.rent_index > 75 ? 'very cheap rent' : country.rent_index > 50 ? 'affordable rent' : 'higher rent';
 
-        if (groceriesVal) groceriesVal.textContent = `${Math.round(country.grocery_index)}/100`;
+        if (groceriesVal) groceriesVal.innerHTML = `${Math.round(country.grocery_index)}<span class="score-denom">/100</span>`;
         if (groceriesSub) groceriesSub.textContent = country.grocery_index > 60 ? 'inexpensive' : country.grocery_index > 40 ? 'reasonable' : 'pricier groceries';
 
-        if (utilitiesVal) utilitiesVal.textContent = `${Math.round(country.utilities_index)}/100`;
+        if (utilitiesVal) utilitiesVal.innerHTML = `${Math.round(country.utilities_index)}<span class="score-denom">/100</span>`;
         if (utilitiesSub) utilitiesSub.textContent = country.utilities_index > 70 ? 'low cost' : 'moderate';
 
-        if (transportVal) transportVal.textContent = `${Math.round(country.transport_index)}/100`;
+        if (transportVal) transportVal.innerHTML = `${Math.round(country.transport_index)}<span class="score-denom">/100</span>`;
         if (transportSub) transportSub.textContent = country.transport_index > 60 ? 'very low cost' : country.transport_index > 35 ? 'moderate transport' : 'pricier transport';
 
         if (usComp) {

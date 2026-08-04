@@ -502,17 +502,17 @@ body {
 .profile-main-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding-bottom: 14px;
+    gap: 16px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-glass);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .cost-index-badge {
-    width: 48px;
-    height: 48px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--theme-color-subtle) 0%, rgba(0,0,0,0) 70%);
+    background: transparent;
     border: 2px solid var(--theme-color);
     display: flex;
     align-items: center;
@@ -521,45 +521,47 @@ body {
     color: var(--theme-color);
     font-family: var(--font-heading);
     font-weight: 700;
-    box-shadow: 0 0 12px var(--theme-color-glow);
+    box-shadow: none;
     flex-shrink: 0;
 }
 
 #profile-cost-score {
-    font-size: 17px;
+    font-size: 19px;
+    font-weight: 700;
 }
 
 .score-denom {
-    font-size: 10px;
-    opacity: 0.7;
-    margin-left: 1px;
+    font-size: 11px;
+    opacity: 0.6;
+    margin-left: 2px;
+    font-weight: 500;
 }
 
 .profile-header-text h4 {
     margin: 0;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--text-primary);
 }
 
 .profile-header-text p {
-    margin: 2px 0 0 0;
-    font-size: 11px;
+    margin: 3px 0 0 0;
+    font-size: 12px;
     color: var(--text-secondary);
 }
 
 .profile-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .profile-grid-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-glass);
     border-radius: var(--radius-sm);
-    padding: 10px;
+    padding: 12px 14px;
     display: flex;
     flex-direction: column;
 }
@@ -577,11 +579,16 @@ body {
 
 .grid-val {
     font-family: var(--font-heading);
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
-    margin: 3px 0 1px 0;
+    margin: 4px 0 2px 0;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
 }
+
+
 
 .grid-sub {
     font-size: 10px;

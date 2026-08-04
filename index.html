@@ -13,8 +13,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Increment version to v26 to force CDN cache invalidation -->
-    <link rel="stylesheet" href="styles.css?v=26">
+    <!-- Increment version to v27 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=27">
     <meta name="color-scheme" content="light dark">
     <script>
         // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
@@ -127,22 +127,22 @@
                                     <div class="profile-grid">
                                         <div class="profile-grid-item">
                                             <span class="grid-label">HOUSING</span>
-                                            <span class="grid-val" id="profile-housing-val">--/100</span>
+                                            <span class="grid-val" id="profile-housing-val">--<span class="score-denom">/100</span></span>
                                             <span class="grid-sub" id="profile-housing-sub">affordable rent</span>
                                         </div>
                                         <div class="profile-grid-item">
                                             <span class="grid-label">GROCERIES</span>
-                                            <span class="grid-val" id="profile-groceries-val">--/100</span>
+                                            <span class="grid-val" id="profile-groceries-val">--<span class="score-denom">/100</span></span>
                                             <span class="grid-sub" id="profile-groceries-sub">reasonable</span>
                                         </div>
                                         <div class="profile-grid-item">
                                             <span class="grid-label">UTILITIES</span>
-                                            <span class="grid-val" id="profile-utilities-val">--/100</span>
+                                            <span class="grid-val" id="profile-utilities-val">--<span class="score-denom">/100</span></span>
                                             <span class="grid-sub" id="profile-utilities-sub">moderate</span>
                                         </div>
                                         <div class="profile-grid-item">
                                             <span class="grid-label">TRANSPORT</span>
-                                            <span class="grid-val" id="profile-transport-val">--/100</span>
+                                            <span class="grid-val" id="profile-transport-val">--<span class="score-denom">/100</span></span>
                                             <span class="grid-sub" id="profile-transport-sub">low cost</span>
                                         </div>
                                     </div>
@@ -385,7 +385,7 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Increment version to v26 to force CDN cache invalidation -->
-    <script src="app.js?v=26"></script>
+    <!-- Increment version to v27 to force CDN cache invalidation -->
+    <script src="app.js?v=27"></script>
 </body>
 </html>
