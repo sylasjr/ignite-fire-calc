@@ -13,8 +13,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Increment version to v28 to force CDN cache invalidation -->
-    <link rel="stylesheet" href="styles.css?v=28">
+    <!-- Increment version to v29 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=29">
     <meta name="color-scheme" content="light dark">
     <script>
         // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
@@ -61,6 +61,10 @@
                             <img src="Assets/fire_avatar.svg?v=2" alt="" class="chip-avatar">
                             <span>Traditional</span>
                         </button>
+                        <button class="path-chip" data-path="expat" data-expenses="30000" data-swr="3.5" aria-pressed="false" data-tooltip="Retire abroad in a low-cost country. Your money stretches much further overseas.">
+                            <img src="Assets/expatfire.svg?v=2" alt="" class="chip-avatar">
+                            <span>Expat</span>
+                        </button>
                         <button class="path-chip" data-path="lean" data-expenses="25000" data-swr="3.5" aria-pressed="false" data-tooltip="Minimalist lifestyle. Spend under $40K/year — strict budgets, maximum savings.">
                             <img src="Assets/leanfire_avatar.svg?v=2" alt="" class="chip-avatar">
                             <span>Lean</span>
@@ -72,10 +76,6 @@
                         <button class="path-chip" data-path="barista" data-expenses="40000" data-swr="3" aria-pressed="false" data-tooltip="Partial independence. Work part-time for extra income and healthcare benefits.">
                             <img src="Assets/barista_avatar.svg?v=2" alt="" class="chip-avatar">
                             <span>Barista</span>
-                        </button>
-                        <button class="path-chip" data-path="expat" data-expenses="30000" data-swr="3.5" aria-pressed="false" data-tooltip="Retire abroad in a low-cost country. Your money stretches much further overseas.">
-                            <img src="Assets/expatfire.svg?v=2" alt="" class="chip-avatar">
-                            <span>Expat</span>
                         </button>
                     </div>
                     
@@ -353,6 +353,11 @@
                             <p class="path-description">Aiming to retire with a nest egg that matches your current standard of living. Usually assumes an annual retirement spend of $40,000 to $80,000 based on standard expenses.</p>
                         </div>
                         <div class="path-card">
+                            <img src="Assets/expatfire.svg?v=2" alt="Expat FIRE Illustration" class="path-illustration glow-expat">
+                            <div class="path-badge type-expat">Expat FIRE</div>
+                            <p class="path-description">Geographic arbitrage. Retiring early by relocating to a country with a much lower cost of living, allowing your retirement funds to stretch significantly further.</p>
+                        </div>
+                        <div class="path-card">
                             <img src="Assets/leanfire_avatar.svg?v=2" alt="Lean FIRE Illustration" class="path-illustration glow-lean">
                             <div class="path-badge type-lean">Lean FIRE</div>
                             <p class="path-description">A minimalist approach. Aiming for an annual spend of $40,000 or less. Requires strict budgeting and a highly optimized, low-cost lifestyle.</p>
@@ -367,11 +372,6 @@
                             <div class="path-badge type-barista">Barista FIRE</div>
                             <p class="path-description">Achieving partial independence. You save enough to cover core survival, then quit your high-stress job to work part-time or in a passion field for side income and healthcare benefits.</p>
                         </div>
-                        <div class="path-card">
-                            <img src="Assets/expatfire.svg?v=2" alt="Expat FIRE Illustration" class="path-illustration glow-expat">
-                            <div class="path-badge type-expat">Expat FIRE</div>
-                            <p class="path-description">Geographic arbitrage. Retiring early by relocating to a country with a much lower cost of living, allowing your retirement funds to stretch significantly further.</p>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -385,7 +385,7 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Increment version to v28 to force CDN cache invalidation -->
-    <script src="app.js?v=28"></script>
+    <!-- Increment version to v29 to force CDN cache invalidation -->
+    <script src="app.js?v=29"></script>
 </body>
 </html>
