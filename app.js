@@ -188,8 +188,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // 6. Reset chart canvas height to match container collapse/expand transition
+        triggerChartResize();
+        setTimeout(triggerChartResize, 420);
 
-        // 5. Persist selection
+        // 7. Persist selection
         localStorage.setItem('fire_activePath', pathId);
     }
 
@@ -907,7 +910,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (profileToggleBtn && profileCard) {
         profileToggleBtn.addEventListener('click', () => {
             profileCard.classList.toggle('expanded');
+            triggerChartResize();
+            setTimeout(triggerChartResize, 420);
         });
+    }
+
+    function triggerChartResize() {
+        const canvas = document.getElementById('projectionChart');
+        if (canvas) {
+            canvas.style.height = '';
+            canvas.style.width = '';
+        }
+        if (projectionChart) {
+            projectionChart.resize();
+            projectionChart.update('none');
+        }
     }
 
     function updateCountryProfileCard(country) {
