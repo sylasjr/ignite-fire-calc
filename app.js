@@ -803,6 +803,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fetch Expat Countries Data
     let expatCountriesData = [];
+    const FALLBACK_COUNTRIES = [
+        { country: "Portugal", country_code: "PT", monthly_estimate_usd: 2000 },
+        { country: "Spain", country_code: "ES", monthly_estimate_usd: 2200 },
+        { country: "Costa Rica", country_code: "CR", monthly_estimate_usd: 1700 },
+        { country: "Mexico", country_code: "MX", monthly_estimate_usd: 1500 },
+        { country: "Thailand", country_code: "TH", monthly_estimate_usd: 1200 },
+        { country: "Colombia", country_code: "CO", monthly_estimate_usd: 1100 },
+        { country: "Panama", country_code: "PA", monthly_estimate_usd: 1800 },
+        { country: "Vietnam", country_code: "VN", monthly_estimate_usd: 1000 },
+        { country: "Indonesia", country_code: "ID", monthly_estimate_usd: 1200 },
+        { country: "Greece", country_code: "GR", monthly_estimate_usd: 1900 },
+        { country: "Italy", country_code: "IT", monthly_estimate_usd: 2300 },
+        { country: "Malaysia", country_code: "MY", monthly_estimate_usd: 1300 },
+        { country: "Philippines", country_code: "PH", monthly_estimate_usd: 1100 },
+        { country: "Ecuador", country_code: "EC", monthly_estimate_usd: 1200 },
+        { country: "Czech Republic", country_code: "CZ", monthly_estimate_usd: 1800 }
+    ];
+
     function fetchExpatCountries() {
         if (!expatCountrySelect) return;
         
@@ -818,8 +836,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 populateExpatDropdown();
             })
             .catch(err => {
-                console.error("Error fetching expat cost of living:", err);
-                expatCountrySelect.innerHTML = '<option value="" disabled>Failed to load countries. Using default fallback.</option>';
+                console.warn("Error fetching expat cost of living (using offline fallback):", err);
+                // Load fallback list instead of showing error
+                expatCountriesData = FALLBACK_COUNTRIES;
+                populateExpatDropdown();
+                
+                // Show a brief fallback note in place of error
+                if (expatCostNote) {
+                    expatCostNote.textContent = "Offline mode: loaded popular retirement destinations.";
+                    expatCostNote.style.color = "var(--text-muted)";
+                }
             });
     }
 
@@ -844,6 +870,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const country = expatCountriesData.find(c => c.country_code === savedCountry);
             if (country && expatCostNote) {
                 const annual = country.monthly_estimate_usd * 12;
+                expatCostNote.style.color = "";
                 expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annual)}/yr)`;
             }
         }
@@ -863,6 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Show cost note
                 if (expatCostNote) {
+                    expatCostNote.style.color = "";
                     expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
                 }
                 
