@@ -13,8 +13,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Increment version to v23 to force CDN cache invalidation -->
-    <link rel="stylesheet" href="styles.css?v=23">
+    <!-- Increment version to v24 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=24">
     <meta name="color-scheme" content="light dark">
     <script>
         // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
@@ -83,15 +83,17 @@
                     <div id="expat-location-container" class="hidden-fade">
                         <div class="input-group">
                             <div class="label-row">
-                                <label for="expat-country-select">Retirement Destination</label>
+                                <label for="expat-country-search">Retirement Destination</label>
                             </div>
-                            <div class="select-wrapper">
-                                <i data-lucide="globe" class="select-icon"></i>
-                                <select id="expat-country-select" class="fire-select">
-                                    <option value="" disabled selected>Select a country...</option>
-                                </select>
+                            <div class="combobox-wrapper">
+                                <i data-lucide="search" class="select-icon"></i>
+                                <input type="text" id="expat-country-search" class="fire-select combobox-input" placeholder="Type or click to search countries..." autocomplete="off">
+                                <div id="expat-country-dropdown" class="combobox-dropdown hidden"></div>
                             </div>
                             <p class="expat-helper-note" id="expat-cost-note"></p>
+                            <p class="data-source-credit">
+                                Data source: <a href="https://getwherenext.com/data/cost-of-living-2026" target="_blank" rel="noopener noreferrer">WhereNext 2026 Cost of Living Index ↗</a>
+                            </p>
                         </div>
                     </div>
 
@@ -322,7 +324,7 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Increment version to v23 to force CDN cache invalidation -->
-    <script src="app.js?v=23"></script>
+    <!-- Increment version to v24 to force CDN cache invalidation -->
+    <script src="app.js?v=24"></script>
 </body>
 </html>

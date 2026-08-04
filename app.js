@@ -73,9 +73,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Toggle
     const themeToggleBtn = document.getElementById('theme-toggle');
 
+    // Helper to convert 2-letter ISO country code to flag emoji
+    function getFlagEmoji(countryCode) {
+        if (!countryCode || countryCode.length !== 2) return '🌐';
+        return countryCode
+            .toUpperCase()
+            .replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397));
+    }
+
     // Expat Destination DOM Elements
     const expatLocationContainer = document.getElementById('expat-location-container');
-    const expatCountrySelect = document.getElementById('expat-country-select');
+    const expatCountrySearch = document.getElementById('expat-country-search');
+    const expatCountryDropdown = document.getElementById('expat-country-dropdown');
     const expatCostNote = document.getElementById('expat-cost-note');
 
     // Chart variable
@@ -175,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 expatLocationContainer.classList.remove('show');
                 if (expatCostNote) expatCostNote.textContent = '';
-                if (expatCountrySelect) expatCountrySelect.selectedIndex = 0;
+                if (expatCountryDropdown) expatCountryDropdown.classList.add('hidden');
             }
         }
 
@@ -822,10 +831,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function fetchExpatCountries() {
-        if (!expatCountrySelect) return;
-        
-        expatCountrySelect.innerHTML = '<option value="" disabled selected>Loading countries...</option>';
-        
         fetch('./cost-of-living.json')
             .then(res => {
                 if (!res.ok) throw new Error("HTTP error " + res.status);
@@ -834,63 +839,107 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(json => {
                 expatCountriesData = Array.isArray(json) ? json : (json.data || []);
                 populateExpatDropdown();
+                restoreSavedExpatCountry();
             })
             .catch(err => {
                 console.warn("Error fetching local expat cost of living:", err);
                 expatCountriesData = FALLBACK_COUNTRIES;
                 populateExpatDropdown();
+                restoreSavedExpatCountry();
             });
     }
 
-    function populateExpatDropdown() {
-        if (!expatCountrySelect) return;
-        expatCountrySelect.innerHTML = '<option value="" disabled selected>Select a country...</option>';
+    function populateExpatDropdown(filterQuery = '') {
+        if (!expatCountryDropdown) return;
+        expatCountryDropdown.innerHTML = '';
         
-        // Sort countries alphabetically
         const sorted = [...expatCountriesData].sort((a, b) => a.country.localeCompare(b.country));
-        
-        sorted.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c.country_code;
-            opt.textContent = `${c.country} ($${c.monthly_estimate_usd}/mo)`;
-            expatCountrySelect.appendChild(opt);
+        const filtered = sorted.filter(c => 
+            c.country.toLowerCase().includes(filterQuery.toLowerCase()) ||
+            c.country_code.toLowerCase().includes(filterQuery.toLowerCase())
+        );
+
+        if (filtered.length === 0) {
+            const noRes = document.createElement('div');
+            noRes.className = 'combobox-no-results';
+            noRes.textContent = 'No matching countries found';
+            expatCountryDropdown.appendChild(noRes);
+            return;
+        }
+
+        filtered.forEach(c => {
+            const flag = getFlagEmoji(c.country_code);
+            const item = document.createElement('div');
+            item.className = 'combobox-item';
+            item.innerHTML = `
+                <span><span class="combobox-flag">${flag}</span>${c.country}</span>
+                <span class="combobox-cost">$${formatNumberWithCommas(c.monthly_estimate_usd)}/mo</span>
+            `;
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectExpatCountry(c);
+            });
+            expatCountryDropdown.appendChild(item);
         });
-        
-        // Try restoring saved expat country selection if exists
-        const savedCountry = localStorage.getItem('fire_expat_country');
-        if (savedCountry) {
-            expatCountrySelect.value = savedCountry;
-            const country = expatCountriesData.find(c => c.country_code === savedCountry);
-            if (country && expatCostNote) {
-                const annual = country.monthly_estimate_usd * 12;
-                expatCostNote.style.color = "";
-                expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annual)}/yr)`;
+    }
+
+    function selectExpatCountry(country) {
+        if (!country) return;
+        const flag = getFlagEmoji(country.country_code);
+        if (expatCountrySearch) {
+            expatCountrySearch.value = `${flag} ${country.country}`;
+        }
+        if (expatCountryDropdown) {
+            expatCountryDropdown.classList.add('hidden');
+        }
+
+        const annualExpenses = country.monthly_estimate_usd * 12;
+        annualExpensesInput.value = formatNumberWithCommas(annualExpenses);
+        annualExpensesSlider.value = annualExpenses;
+
+        if (expatCostNote) {
+            expatCostNote.style.color = "";
+            expatCostNote.textContent = `Average living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
+        }
+
+        localStorage.setItem('fire_expat_country', country.country_code);
+        calculateFIRE();
+        saveToStorage();
+    }
+
+    function restoreSavedExpatCountry() {
+        const savedCountryCode = localStorage.getItem('fire_expat_country');
+        if (savedCountryCode) {
+            const country = expatCountriesData.find(c => c.country_code === savedCountryCode);
+            if (country) {
+                const flag = getFlagEmoji(country.country_code);
+                if (expatCountrySearch) expatCountrySearch.value = `${flag} ${country.country}`;
+                if (expatCostNote) {
+                    const annual = country.monthly_estimate_usd * 12;
+                    expatCostNote.style.color = "";
+                    expatCostNote.textContent = `Average living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annual)}/yr)`;
+                }
             }
         }
     }
 
-    // Handle Expat Country Selection Change
-    if (expatCountrySelect) {
-        expatCountrySelect.addEventListener('change', () => {
-            const countryCode = expatCountrySelect.value;
-            const country = expatCountriesData.find(c => c.country_code === countryCode);
-            if (country) {
-                const annualExpenses = country.monthly_estimate_usd * 12;
-                
-                // Update inputs
-                annualExpensesInput.value = formatNumberWithCommas(annualExpenses);
-                annualExpensesSlider.value = annualExpenses;
-                
-                // Show cost note
-                if (expatCostNote) {
-                    expatCostNote.style.color = "";
-                    expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
-                }
-                
-                localStorage.setItem('fire_expat_country', countryCode);
-                
-                calculateFIRE();
-                saveToStorage();
+    // Combobox Event Listeners
+    if (expatCountrySearch && expatCountryDropdown) {
+        expatCountrySearch.addEventListener('focus', () => {
+            const query = expatCountrySearch.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').replace(/^[^\w\s]+/g, '').trim();
+            populateExpatDropdown(query);
+            expatCountryDropdown.classList.remove('hidden');
+        });
+
+        expatCountrySearch.addEventListener('input', () => {
+            const query = expatCountrySearch.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').replace(/^[^\w\s]+/g, '').trim();
+            populateExpatDropdown(query);
+            expatCountryDropdown.classList.remove('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!expatCountrySearch.contains(e.target) && !expatCountryDropdown.contains(e.target)) {
+                expatCountryDropdown.classList.add('hidden');
             }
         });
     }
