@@ -385,6 +385,13 @@ document.addEventListener('DOMContentLoaded', () => {
         activeAnimations.set(element, anim);
     }
 
+    function cancelAnimation(element) {
+        if (activeAnimations.has(element)) {
+            cancelAnimationFrame(activeAnimations.get(element).req);
+            activeAnimations.delete(element);
+        }
+    }
+
     // 2. Confetti Engine (Lightweight Canvas)
     let hasCelebrated = false;
     let confettiParticles = [];
@@ -530,6 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (yearsToFire === 0) {
                 if (achievedCardHeader) achievedCardHeader.textContent = "Congratulations";
+                cancelAnimation(fireTimeOutput);
                 fireTimeOutput.textContent = "FIRE Achieved";
                 fireStatusOutput.textContent = `FIRE achieved at age ${currentAge}`;
             } else {
@@ -542,6 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (achievedCardHeader) achievedCardHeader.textContent = "Target Achieved In";
+            cancelAnimation(fireTimeOutput);
             fireTimeOutput.textContent = "50+ Years";
             fireStatusOutput.textContent = "Increase savings or return rate";
         }
