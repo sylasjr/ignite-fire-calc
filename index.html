@@ -13,8 +13,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Increment version to v8 to force CDN cache invalidation -->
-    <link rel="stylesheet" href="styles.css?v=11">
+    <!-- Increment version to v13 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=13">
     <meta name="color-scheme" content="light dark">
     <script>
         // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
@@ -179,8 +179,12 @@
                     <!-- Summary Metric Cards -->
                     <div class="metrics-grid">
                         <div class="metric-card glass-card accent-emerald">
-                            <div class="card-icon">
-                                <i data-lucide="target"></i>
+                            <div class="card-icon progress-ring-container">
+                                <svg class="progress-ring" width="56" height="56">
+                                    <circle class="progress-ring-bg" cx="28" cy="28" r="24" />
+                                    <circle class="progress-ring-fill" id="fire-progress-circle" cx="28" cy="28" r="24" />
+                                </svg>
+                                <i data-lucide="flag"></i>
                             </div>
                             <div class="card-content">
                                 <h3>Your FIRE Target</h3>
@@ -298,7 +302,10 @@
         <p>Ignite FIRE Calculator &copy; <span id="current-year">2026</span></p>
     </footer>
 
-    <!-- Increment version to v8 to force CDN cache invalidation -->
-    <script src="app.js?v=11"></script>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Increment version to v13 to force CDN cache invalidation -->
+    <script src="app.js?v=13"></script>
 </body>
 </html>

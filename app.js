@@ -339,6 +339,133 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(updateChartTheme, 50);
     });
 
+    // ── Gamification Engine ──
+
+    // 1. Number Animation
+    const activeAnimations = new Map();
+    function animateValue(element, targetValue, formatFn) {
+        if (!element) return;
+        const now = performance.now();
+        const duration = 400; // ms
+
+        // Parse starting value from current text
+        let startVal = parseFloat(element.textContent.replace(/[^\d.-]/g, ''));
+        if (isNaN(startVal)) startVal = 0;
+
+        if (activeAnimations.has(element)) {
+            cancelAnimationFrame(activeAnimations.get(element).req);
+        }
+
+        if (startVal === targetValue) {
+            element.textContent = formatFn(targetValue);
+            return;
+        }
+
+        const anim = { startTime: now, startValue: startVal, endValue: targetValue, formatFn };
+
+        const step = (currentTime) => {
+            const elapsed = currentTime - anim.startTime;
+            let progress = Math.min(elapsed / duration, 1);
+            
+            // easeOutExpo
+            const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            const currentVal = anim.startValue + (anim.endValue - anim.startValue) * easeProgress;
+            
+            element.textContent = anim.formatFn(currentVal);
+
+            if (progress < 1) {
+                anim.req = requestAnimationFrame(step);
+            } else {
+                element.textContent = anim.formatFn(anim.endValue);
+                activeAnimations.delete(element);
+            }
+        };
+
+        anim.req = requestAnimationFrame(step);
+        activeAnimations.set(element, anim);
+    }
+
+    // 2. Confetti Engine (Lightweight Canvas)
+    let hasCelebrated = false;
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function fireConfetti() {
+        if (hasCelebrated) return;
+        hasCelebrated = true;
+
+        const canvas = document.getElementById('confetti-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = [
+            getCssVar('--theme-color'),
+            '#ffffff',
+            'rgba(255,255,255,0.5)'
+        ];
+
+        confettiParticles = [];
+        for (let i = 0; i < 100; i++) {
+            confettiParticles.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2 + 50,
+                r: Math.random() * 6 + 2,
+                dx: Math.random() * 14 - 7,
+                dy: Math.random() * -15 - 5,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                tilt: Math.floor(Math.random() * 10) - 10,
+                tiltAngleIncrement: (Math.random() * 0.07) + 0.05,
+                tiltAngle: 0
+            });
+        }
+
+        const resultsPanel = document.querySelector('.results-panel');
+        if (resultsPanel) resultsPanel.classList.add('achieved-glow');
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+
+            confettiParticles.forEach(p => {
+                p.tiltAngle += p.tiltAngleIncrement;
+                p.y += (Math.cos(p.tiltAngle) + 1 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle) * 2 + p.dx;
+                p.dy += 0.1; // gravity
+                p.y += p.dy;
+
+                if (p.y <= canvas.height) active = true;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.r;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r);
+                ctx.stroke();
+            });
+
+            if (active) {
+                confettiAnimationId = requestAnimationFrame(render);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        
+        cancelAnimationFrame(confettiAnimationId);
+        render();
+
+        setTimeout(() => {
+            if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
+        }, 3000);
+    }
+
+    function resetCelebration() {
+        hasCelebrated = false;
+        const resultsPanel = document.querySelector('.results-panel');
+        if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
+    }
+
     // Core FIRE Calculation Logic
     function calculateFIRE() {
         const currentAge = parseInt(currentAgeNum.value.replace(/,/g, '')) || 18;
@@ -352,11 +479,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. Calculate FIRE Target Number
         const fireTarget = annualExpenses / swr;
-        fireNumberOutput.textContent = new Intl.NumberFormat('en-US', {
+        
+        const currencyFormatter = new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
             maximumFractionDigits: 0
-        }).format(fireTarget);
+        });
+
+        animateValue(fireNumberOutput, fireTarget, (val) => currencyFormatter.format(val));
 
         // 2. Project wealth year by year
         const labels = [];
@@ -388,21 +518,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 3. Update Metric Display Cards
+        let displayYears = 0;
         if (fireAge !== -1) {
             const yearsToFire = fireAge - currentAge;
-            fireTimeOutput.textContent = yearsToFire === 0 ? "Achieved!" : `${yearsToFire} ${yearsToFire === 1 ? 'Year' : 'Years'}`;
+            displayYears = yearsToFire;
+            animateValue(fireTimeOutput, yearsToFire, (val) => {
+                const rounded = Math.round(val);
+                return rounded === 0 ? "Achieved!" : `${rounded} ${rounded === 1 ? 'Year' : 'Years'}`;
+            });
             fireStatusOutput.textContent = yearsToFire === 0 ? "You are already FIRE" : `At age ${fireAge}`;
         } else {
             fireTimeOutput.textContent = "50+ Years";
             fireStatusOutput.textContent = "Increase savings or return rate";
         }
 
-        retireValueOutput.textContent = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0
-        }).format(wealthAtTargetAge);
+        animateValue(retireValueOutput, wealthAtTargetAge, (val) => currencyFormatter.format(val));
         retireValueDescOutput.textContent = `At target age ${targetAge}`;
+
+        // Gamification: Progress Ring & Confetti
+        const progressCircle = document.getElementById('fire-progress-circle');
+        if (progressCircle) {
+            // Circle circumference is ~151
+            const circumference = 151;
+            let percent = 0;
+            if (fireTarget > 0) {
+                percent = Math.max(0, Math.min(100, (netWorth / fireTarget) * 100));
+            }
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        if (fireAge !== -1 && (fireAge - currentAge) === 0) {
+            fireConfetti();
+        } else {
+            resetCelebration();
+        }
 
         // 4. Update the Projection Chart
         renderChart(labels, netWorthData, targetData);
@@ -501,6 +651,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             borderWidth: 1,
                             padding: 12,
                             displayColors: true,
+                            boxPadding: 8,
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';

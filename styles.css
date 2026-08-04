@@ -674,6 +674,48 @@ input[type=number] {
     background: var(--theme-color-subtle);
 }
 
+/* ── Gamification: Progress Ring ── */
+.progress-ring-container {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    background: transparent; /* Remove default bg so ring is visible */
+    border-radius: 50%;
+}
+
+.progress-ring-container i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    z-index: 2;
+}
+
+.progress-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(-90deg); /* Start from top */
+}
+
+.progress-ring-bg {
+    fill: var(--theme-color-subtle);
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: var(--theme-color);
+    stroke-width: 4;
+    stroke-linecap: round;
+    /* Circumference = 2 * pi * 24 ≈ 150.8 */
+    stroke-dasharray: 151;
+    stroke-dashoffset: 151;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.5s ease;
+    filter: drop-shadow(0 0 4px var(--theme-color-glow));
+}
+
 .card-content h3 {
     font-size: 13px;
     font-weight: 500;
@@ -963,6 +1005,24 @@ input[type=number] {
     color: #ff9f0a;
     border: 1px solid rgba(255, 159, 10, 0.2);
 }
+
+/* ── Gamification: Confetti Canvas & Glow ── */
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.achieved-glow {
+    box-shadow: 0 0 30px var(--theme-color-glow) !important;
+    border-color: var(--theme-color-border) !important;
+    transform: scale(1.01);
+}
+
 
 .type-expat {
     background: rgba(100, 210, 255, 0.1);
