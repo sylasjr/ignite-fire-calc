@@ -1077,36 +1077,45 @@ input[type=number] {
     background: rgba(0,0,0,0.01);
 }
 
-/* ── Achieved Card Glowing Animations ── */
-@keyframes achieve-intro {
-    0% {
-        box-shadow: 0 0 0px transparent;
-        border-color: var(--border-glass);
-    }
-    30% {
-        box-shadow: 0 0 25px var(--theme-color-glow);
-        border-color: var(--theme-color);
-    }
-    100% {
-        box-shadow: 0 0 8px var(--theme-color-glow);
-        border-color: var(--theme-color-border);
-    }
+/* ── Achieved Card Animations (Tada & Icon Swap) ── */
+#achieved-card.card-achieved .icon-calendar {
+    display: none !important;
 }
 
-@keyframes achieve-idle {
-    0% {
-        box-shadow: 0 0 4px var(--theme-color-glow);
-    }
-    50% {
-        box-shadow: 0 0 10px var(--theme-color-glow);
-    }
-    100% {
-        box-shadow: 0 0 4px var(--theme-color-glow);
-    }
+#achieved-card.card-achieved .icon-flame {
+    display: block !important;
+    color: var(--theme-color);
 }
 
-.card-achieved-glow {
-    animation: achieve-intro 3.5s ease-out forwards, achieve-idle 3s infinite 3.5s ease-in-out;
-    transition: border-color 0.5s ease;
+@keyframes tada {
+  from {
+    transform: scale3d(1, 1, 1);
+  }
+
+  10%,
+  20% {
+    transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg);
+  }
+
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+  }
+
+  40%,
+  60%,
+  80% {
+    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+  }
+
+  to {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.card-achieved {
+    animation: tada 1s ease-in-out;
 }
 

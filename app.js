@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const resultsPanel = document.querySelector('.results-panel');
         if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
         const achievedCard = document.getElementById('achieved-card');
-        if (achievedCard) achievedCard.classList.remove('card-achieved-glow');
+        if (achievedCard) achievedCard.classList.remove('card-achieved');
     }
 
     // Core FIRE Calculation Logic
@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fireAge !== -1 && (fireAge - currentAge) === 0) {
             fireConfetti();
             const achievedCard = document.getElementById('achieved-card');
-            if (achievedCard) achievedCard.classList.add('card-achieved-glow');
+            if (achievedCard) achievedCard.classList.add('card-achieved');
         } else {
             resetCelebration();
         }
