@@ -883,8 +883,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let activeHouseholdMultiplier = 1.0;
+    let selectedExpatCountryObj = null;
+
+    // Household Size Chips Listener
+    const sizeChips = document.querySelectorAll('.size-chip');
+    sizeChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            sizeChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            activeHouseholdMultiplier = parseFloat(chip.dataset.multiplier) || 1.0;
+            localStorage.setItem('fire_expat_household_multiplier', activeHouseholdMultiplier);
+            
+            if (selectedExpatCountryObj) {
+                selectExpatCountry(selectedExpatCountryObj);
+            }
+        });
+    });
+
+    // Profile Card Accordion Toggle
+    const profileCard = document.getElementById('country-profile-card');
+    const profileToggleBtn = document.getElementById('profile-toggle-btn');
+    if (profileToggleBtn && profileCard) {
+        profileToggleBtn.addEventListener('click', () => {
+            profileCard.classList.toggle('expanded');
+        });
+    }
+
+    function updateCountryProfileCard(country) {
+        if (!country) return;
+        
+        const scoreEl = document.getElementById('profile-cost-score');
+        const nameEl = document.getElementById('profile-country-name');
+        const descEl = document.getElementById('profile-country-desc');
+        const housingVal = document.getElementById('profile-housing-val');
+        const housingSub = document.getElementById('profile-housing-sub');
+        const groceriesVal = document.getElementById('profile-groceries-val');
+        const groceriesSub = document.getElementById('profile-groceries-sub');
+        const utilitiesVal = document.getElementById('profile-utilities-val');
+        const utilitiesSub = document.getElementById('profile-utilities-sub');
+        const transportVal = document.getElementById('profile-transport-val');
+        const transportSub = document.getElementById('profile-transport-sub');
+        const usComp = document.getElementById('profile-us-comparison');
+
+        const flag = getFlagEmoji(country.country_code);
+
+        if (scoreEl) scoreEl.textContent = country.cost_index;
+        if (nameEl) nameEl.textContent = `${flag} ${country.country}`;
+        if (descEl) descEl.textContent = `Cost Index relative to global baseline`;
+
+        if (housingVal) housingVal.textContent = `${Math.round(country.rent_index)}/100`;
+        if (housingSub) housingSub.textContent = country.rent_index > 75 ? 'very cheap rent' : country.rent_index > 50 ? 'affordable rent' : 'higher rent';
+
+        if (groceriesVal) groceriesVal.textContent = `${Math.round(country.grocery_index)}/100`;
+        if (groceriesSub) groceriesSub.textContent = country.grocery_index > 60 ? 'inexpensive' : country.grocery_index > 40 ? 'reasonable' : 'pricier groceries';
+
+        if (utilitiesVal) utilitiesVal.textContent = `${Math.round(country.utilities_index)}/100`;
+        if (utilitiesSub) utilitiesSub.textContent = country.utilities_index > 70 ? 'low cost' : 'moderate';
+
+        if (transportVal) transportVal.textContent = `${Math.round(country.transport_index)}/100`;
+        if (transportSub) transportSub.textContent = country.transport_index > 60 ? 'very low cost' : country.transport_index > 35 ? 'moderate transport' : 'pricier transport';
+
+        if (usComp) {
+            // US baseline cost_index is ~82
+            const usIndex = 82;
+            const diff = Math.round(((usIndex - country.cost_index) / usIndex) * 100);
+            if (diff >= 0) {
+                usComp.textContent = `🏷️ ${diff}% cheaper than US baseline`;
+                usComp.className = 'profile-pill pill-cheaper';
+            } else {
+                usComp.textContent = `🏷️ ${Math.abs(diff)}% pricier than US baseline`;
+                usComp.className = 'profile-pill pill-pricier';
+            }
+        }
+    }
+
     function selectExpatCountry(country) {
         if (!country) return;
+        selectedExpatCountryObj = country;
         const flag = getFlagEmoji(country.country_code);
         if (expatCountrySearch) {
             expatCountrySearch.value = `${flag} ${country.country}`;
@@ -893,14 +969,18 @@ document.addEventListener('DOMContentLoaded', () => {
             expatCountryDropdown.classList.add('hidden');
         }
 
-        const annualExpenses = country.monthly_estimate_usd * 12;
+        const monthlyCost = Math.round(country.monthly_estimate_usd * activeHouseholdMultiplier);
+        const annualExpenses = monthlyCost * 12;
         annualExpensesInput.value = formatNumberWithCommas(annualExpenses);
         annualExpensesSlider.value = annualExpenses;
 
         if (expatCostNote) {
             expatCostNote.style.color = "";
-            expatCostNote.textContent = `Average living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
+            const sizeLabel = activeHouseholdMultiplier === 1.0 ? 'single' : activeHouseholdMultiplier === 1.65 ? 'couple' : 'family';
+            expatCostNote.textContent = `Est. living cost in ${country.country} (${sizeLabel}): $${formatNumberWithCommas(monthlyCost)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
         }
+
+        updateCountryProfileCard(country);
 
         localStorage.setItem('fire_expat_country', country.country_code);
         calculateFIRE();
@@ -908,17 +988,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function restoreSavedExpatCountry() {
+        const savedMultiplier = parseFloat(localStorage.getItem('fire_expat_household_multiplier'));
+        if (savedMultiplier) {
+            activeHouseholdMultiplier = savedMultiplier;
+            sizeChips.forEach(chip => {
+                const active = parseFloat(chip.dataset.multiplier) === savedMultiplier;
+                chip.classList.toggle('active', active);
+            });
+        }
+
         const savedCountryCode = localStorage.getItem('fire_expat_country');
         if (savedCountryCode) {
             const country = expatCountriesData.find(c => c.country_code === savedCountryCode);
             if (country) {
-                const flag = getFlagEmoji(country.country_code);
-                if (expatCountrySearch) expatCountrySearch.value = `${flag} ${country.country}`;
-                if (expatCostNote) {
-                    const annual = country.monthly_estimate_usd * 12;
-                    expatCostNote.style.color = "";
-                    expatCostNote.textContent = `Average living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annual)}/yr)`;
-                }
+                selectExpatCountry(country);
             }
         }
     }
