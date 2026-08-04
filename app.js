@@ -464,6 +464,8 @@ document.addEventListener('DOMContentLoaded', () => {
         hasCelebrated = false;
         const resultsPanel = document.querySelector('.results-panel');
         if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
+        const achievedCard = document.getElementById('achieved-card');
+        if (achievedCard) achievedCard.classList.remove('card-achieved-glow');
     }
 
     // Core FIRE Calculation Logic
@@ -550,6 +552,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (fireAge !== -1 && (fireAge - currentAge) === 0) {
             fireConfetti();
+            const achievedCard = document.getElementById('achieved-card');
+            if (achievedCard) achievedCard.classList.add('card-achieved-glow');
         } else {
             resetCelebration();
         }
@@ -673,8 +677,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
                                         
                                         return [
-                                            `  Annual (${swrPercent}%): ${formatCurrency(annualAllowance)}`,
-                                            `  Monthly: ${formatCurrency(monthlyAllowance)}`
+                                            `  • Annual (${swrPercent}%): ${formatCurrency(annualAllowance)}`,
+                                            `  • Monthly: ${formatCurrency(monthlyAllowance)}`
                                         ];
                                     }
                                     return null;

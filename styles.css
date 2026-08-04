@@ -1076,3 +1076,37 @@ input[type=number] {
 [data-theme="light"] .app-footer {
     background: rgba(0,0,0,0.01);
 }
+
+/* ── Achieved Card Glowing Animations ── */
+@keyframes achieve-intro {
+    0% {
+        box-shadow: 0 0 0px transparent;
+        border-color: var(--border-glass);
+    }
+    30% {
+        box-shadow: 0 0 25px var(--theme-color-glow);
+        border-color: var(--theme-color);
+    }
+    100% {
+        box-shadow: 0 0 8px var(--theme-color-glow);
+        border-color: var(--theme-color-border);
+    }
+}
+
+@keyframes achieve-idle {
+    0% {
+        box-shadow: 0 0 4px var(--theme-color-glow);
+    }
+    50% {
+        box-shadow: 0 0 10px var(--theme-color-glow);
+    }
+    100% {
+        box-shadow: 0 0 4px var(--theme-color-glow);
+    }
+}
+
+.card-achieved-glow {
+    animation: achieve-intro 3.5s ease-out forwards, achieve-idle 3s infinite 3.5s ease-in-out;
+    transition: border-color 0.5s ease;
+}
+
