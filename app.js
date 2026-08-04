@@ -190,7 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 6. Reset chart canvas height to match container collapse/expand transition
         triggerChartResize();
-        setTimeout(triggerChartResize, 420);
+        setTimeout(triggerChartResize, 150);
+        setTimeout(triggerChartResize, 300);
+        setTimeout(triggerChartResize, 450);
 
         // 7. Persist selection
         localStorage.setItem('fire_activePath', pathId);

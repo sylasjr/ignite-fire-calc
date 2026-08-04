@@ -1191,14 +1191,16 @@ input[type=number] {
 .canvas-wrapper {
     position: relative;
     width: 100%;
-    min-height: 320px;
+    min-height: 350px;
     flex-grow: 1;
-    overflow: hidden;
 }
 
 .canvas-wrapper canvas {
-    max-height: 100% !important;
-    max-width: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* About FIRE Layout Styles */
