@@ -406,23 +406,30 @@ document.addEventListener('DOMContentLoaded', () => {
             'rgba(255,255,255,0.5)'
         ];
 
+        const achievedCard = document.getElementById('achieved-card');
+        let spawnX = canvas.width / 2;
+        let spawnY = canvas.height / 2;
+        if (achievedCard) {
+            const rect = achievedCard.getBoundingClientRect();
+            // Convert viewport coordinates to canvas coordinates (taking scroll into account)
+            spawnX = rect.left + rect.width / 2 + window.scrollX;
+            spawnY = rect.top + rect.height / 2 + window.scrollY;
+        }
+
         confettiParticles = [];
         for (let i = 0; i < 100; i++) {
             confettiParticles.push({
-                x: canvas.width / 2,
-                y: canvas.height / 2 + 50,
+                x: spawnX,
+                y: spawnY,
                 r: Math.random() * 6 + 2,
                 dx: Math.random() * 14 - 7,
-                dy: Math.random() * -15 - 5,
+                dy: Math.random() * -12 - 4, // slightly less upward velocity since card is higher up
                 color: colors[Math.floor(Math.random() * colors.length)],
                 tilt: Math.floor(Math.random() * 10) - 10,
                 tiltAngleIncrement: (Math.random() * 0.07) + 0.05,
                 tiltAngle: 0
             });
         }
-
-        const resultsPanel = document.querySelector('.results-panel');
-        if (resultsPanel) resultsPanel.classList.add('achieved-glow');
 
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -454,16 +461,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         cancelAnimationFrame(confettiAnimationId);
         render();
-
-        setTimeout(() => {
-            if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
-        }, 3000);
     }
 
     function resetCelebration() {
         hasCelebrated = false;
-        const resultsPanel = document.querySelector('.results-panel');
-        if (resultsPanel) resultsPanel.classList.remove('achieved-glow');
         const achievedCard = document.getElementById('achieved-card');
         if (achievedCard) achievedCard.classList.remove('card-achieved');
     }
@@ -521,15 +522,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Update Metric Display Cards
         let displayYears = 0;
+        const achievedCardHeader = document.querySelector('#achieved-card h3');
+
         if (fireAge !== -1) {
             const yearsToFire = fireAge - currentAge;
             displayYears = yearsToFire;
-            animateValue(fireTimeOutput, yearsToFire, (val) => {
-                const rounded = Math.round(val);
-                return rounded === 0 ? "Achieved!" : `${rounded} ${rounded === 1 ? 'Year' : 'Years'}`;
-            });
-            fireStatusOutput.textContent = yearsToFire === 0 ? "You are already FIRE" : `At age ${fireAge}`;
+            
+            if (yearsToFire === 0) {
+                if (achievedCardHeader) achievedCardHeader.textContent = "Congratulations";
+                fireTimeOutput.textContent = "FIRE Achieved";
+                fireStatusOutput.textContent = `FIRE achieved at age ${currentAge}`;
+            } else {
+                if (achievedCardHeader) achievedCardHeader.textContent = "Target Achieved In";
+                animateValue(fireTimeOutput, yearsToFire, (val) => {
+                    const rounded = Math.round(val);
+                    return `${rounded} ${rounded === 1 ? 'Year' : 'Years'}`;
+                });
+                fireStatusOutput.textContent = `At age ${fireAge}`;
+            }
         } else {
+            if (achievedCardHeader) achievedCardHeader.textContent = "Target Achieved In";
             fireTimeOutput.textContent = "50+ Years";
             fireStatusOutput.textContent = "Increase savings or return rate";
         }

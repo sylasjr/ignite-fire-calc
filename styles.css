@@ -1023,11 +1023,7 @@ input[type=number] {
     z-index: 9999;
 }
 
-.achieved-glow {
-    box-shadow: 0 0 30px var(--theme-color-glow) !important;
-    border-color: var(--theme-color-border) !important;
-    transform: scale(1.01);
-}
+
 
 
 .type-expat {
