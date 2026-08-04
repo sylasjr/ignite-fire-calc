@@ -536,9 +536,9 @@ document.addEventListener('DOMContentLoaded', () => {
             displayYears = yearsToFire;
             
             if (yearsToFire === 0) {
-                if (achievedCardHeader) achievedCardHeader.textContent = "Congratulations";
+                if (achievedCardHeader) achievedCardHeader.textContent = "Congrats";
                 cancelAnimation(fireTimeOutput);
-                fireTimeOutput.textContent = "FIRE Achieved";
+                fireTimeOutput.textContent = "Achieved!";
                 fireStatusOutput.textContent = `FIRE achieved at age ${currentAge}`;
             } else {
                 if (achievedCardHeader) achievedCardHeader.textContent = "Target Achieved In";
