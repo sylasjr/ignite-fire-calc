@@ -13,8 +13,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Increment version to v20 to force CDN cache invalidation -->
-    <link rel="stylesheet" href="styles.css?v=20">
+    <!-- Increment version to v21 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=21">
     <meta name="color-scheme" content="light dark">
     <script>
         // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
@@ -77,6 +77,22 @@
                             <img src="Assets/expatfire.svg?v=2" alt="" class="chip-avatar">
                             <span>Expat</span>
                         </button>
+                    </div>
+                    
+                    <!-- Expat Location Selector (dynamically shown) -->
+                    <div id="expat-location-container" class="hidden-fade">
+                        <div class="input-group">
+                            <div class="label-row">
+                                <label for="expat-country-select">Retirement Destination</label>
+                            </div>
+                            <div class="select-wrapper">
+                                <i data-lucide="globe" class="select-icon"></i>
+                                <select id="expat-country-select" class="fire-select">
+                                    <option value="" disabled selected>Select a country...</option>
+                                </select>
+                            </div>
+                            <p class="expat-helper-note" id="expat-cost-note"></p>
+                        </div>
                     </div>
 
                     <form id="fire-form" onsubmit="event.preventDefault();">
@@ -306,7 +322,7 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Increment version to v20 to force CDN cache invalidation -->
-    <script src="app.js?v=20"></script>
+    <!-- Increment version to v21 to force CDN cache invalidation -->
+    <script src="app.js?v=21"></script>
 </body>
 </html>

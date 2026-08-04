@@ -362,6 +362,96 @@ body {
     border-bottom: 1px solid var(--border-glass);
 }
 
+/* ── Expat Destination Selector Styles ── */
+.hidden-fade {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s ease, max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), margin 0.4s ease;
+    margin-bottom: 0;
+}
+
+.hidden-fade.show {
+    opacity: 1;
+    max-height: 120px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.select-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--text-secondary);
+    pointer-events: none;
+    width: 18px;
+    height: 18px;
+    z-index: 2;
+}
+
+.fire-select {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    appearance: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    outline: none;
+}
+
+[data-theme="light"] .fire-select {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.fire-select:focus {
+    border-color: var(--theme-color);
+    box-shadow: 0 0 0 3px var(--theme-color-glow);
+}
+
+/* Style options dropdown (limited by OS rendering, but basic color setup helper) */
+.fire-select option {
+    background: #14141d;
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .fire-select option {
+    background: #ffffff;
+    color: #000000;
+}
+
+/* Custom dropdown arrow */
+.select-wrapper::after {
+    content: "▼";
+    font-size: 10px;
+    position: absolute;
+    right: 16px;
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.expat-helper-note {
+    font-size: 12px;
+    color: var(--theme-color);
+    margin-top: 8px;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: color 0.5s ease;
+}
+
+
 /* ── Chip Tooltips ── */
 .path-chip {
     position: relative;

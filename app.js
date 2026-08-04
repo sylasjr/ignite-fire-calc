@@ -73,6 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theme Toggle
     const themeToggleBtn = document.getElementById('theme-toggle');
 
+    // Expat Destination DOM Elements
+    const expatLocationContainer = document.getElementById('expat-location-container');
+    const expatCountrySelect = document.getElementById('expat-country-select');
+    const expatCostNote = document.getElementById('expat-cost-note');
+
     // Chart variable
     let projectionChart = null;
 
@@ -162,6 +167,18 @@ document.addEventListener('DOMContentLoaded', () => {
             projectionChart.data.datasets[0].backgroundColor = grad;
             projectionChart.update('none');
         }
+
+        // 5. Toggle Expat Destination Selector
+        if (expatLocationContainer) {
+            if (pathId === 'expat') {
+                expatLocationContainer.classList.add('show');
+            } else {
+                expatLocationContainer.classList.remove('show');
+                if (expatCostNote) expatCostNote.textContent = '';
+                if (expatCountrySelect) expatCountrySelect.selectedIndex = 0;
+            }
+        }
+
 
         // 5. Persist selection
         localStorage.setItem('fire_activePath', pathId);
@@ -784,10 +801,86 @@ document.addEventListener('DOMContentLoaded', () => {
         projectionChart.update();
     }
 
+    // Fetch Expat Countries Data
+    let expatCountriesData = [];
+    function fetchExpatCountries() {
+        if (!expatCountrySelect) return;
+        
+        expatCountrySelect.innerHTML = '<option value="" disabled selected>Loading countries...</option>';
+        
+        fetch('https://getwherenext.com/api/data/cost-of-living')
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                expatCountriesData = data;
+                populateExpatDropdown();
+            })
+            .catch(err => {
+                console.error("Error fetching expat cost of living:", err);
+                expatCountrySelect.innerHTML = '<option value="" disabled>Failed to load countries. Using default fallback.</option>';
+            });
+    }
+
+    function populateExpatDropdown() {
+        if (!expatCountrySelect) return;
+        expatCountrySelect.innerHTML = '<option value="" disabled selected>Select a country...</option>';
+        
+        // Sort countries alphabetically
+        const sorted = [...expatCountriesData].sort((a, b) => a.country.localeCompare(b.country));
+        
+        sorted.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.country_code;
+            opt.textContent = `${c.country} ($${c.monthly_estimate_usd}/mo)`;
+            expatCountrySelect.appendChild(opt);
+        });
+        
+        // Try restoring saved expat country selection if exists
+        const savedCountry = localStorage.getItem('fire_expat_country');
+        if (savedCountry) {
+            expatCountrySelect.value = savedCountry;
+            const country = expatCountriesData.find(c => c.country_code === savedCountry);
+            if (country && expatCostNote) {
+                const annual = country.monthly_estimate_usd * 12;
+                expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annual)}/yr)`;
+            }
+        }
+    }
+
+    // Handle Expat Country Selection Change
+    if (expatCountrySelect) {
+        expatCountrySelect.addEventListener('change', () => {
+            const countryCode = expatCountrySelect.value;
+            const country = expatCountriesData.find(c => c.country_code === countryCode);
+            if (country) {
+                const annualExpenses = country.monthly_estimate_usd * 12;
+                
+                // Update inputs
+                annualExpensesInput.value = formatNumberWithCommas(annualExpenses);
+                annualExpensesSlider.value = annualExpenses;
+                
+                // Show cost note
+                if (expatCostNote) {
+                    expatCostNote.textContent = `Average expat living cost in ${country.country}: $${formatNumberWithCommas(country.monthly_estimate_usd)}/mo ($${formatNumberWithCommas(annualExpenses)}/yr)`;
+                }
+                
+                localStorage.setItem('fire_expat_country', countryCode);
+                
+                calculateFIRE();
+                saveToStorage();
+            }
+        });
+    }
+
     // Load inputs from local storage, restore selected path, then calculate
     loadFromStorage();
     const savedPath = localStorage.getItem('fire_activePath') || 'traditional';
     // Restore path chip highlight + panel border (without overwriting user's saved field values)
     selectPath(savedPath, false);
     calculateFIRE();
+    
+    // Fetch expat countries
+    fetchExpatCountries();
 });
