@@ -387,8 +387,46 @@ body {
     width: 100%;
 }
 
+.combobox-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+    width: 18px;
+    height: 18px;
+    z-index: 2;
+}
+
 .combobox-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: var(--transition-smooth);
+    box-sizing: border-box;
     cursor: text;
+}
+
+[data-theme="light"] .combobox-input {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.combobox-input:focus {
+    border-color: var(--theme-color);
+    box-shadow: 0 0 10px var(--theme-color-glow);
+}
+
+.combobox-input::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
 }
 
 .combobox-dropdown {
