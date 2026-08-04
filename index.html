@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ignite FIRE | Financial Independence Retire Early Calculator</title>
+    <meta name="description" content="A premium, interactive, and beautifully designed FIRE calculator to map your path to financial freedom.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Increment version to v8 to force CDN cache invalidation -->
+    <link rel="stylesheet" href="styles.css?v=11">
+    <meta name="color-scheme" content="light dark">
+    <script>
+        // Inline script to prevent FOUC (Flash of Unstyled Content) and sync theme
+        const colorScheme = localStorage.getItem("color-scheme") || 'dark';
+        document.documentElement.setAttribute('data-theme', colorScheme);
+    </script>
+</head>
+<body>
+    <div class="background-decor">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="logo-area">
+            <i data-lucide="flame" class="logo-icon"></i>
+            <h1>Ignite<span>FIRE</span></h1>
+        </div>
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="calc-tab" aria-label="Open Calculator">
+                <i data-lucide="calculator"></i><span>Calculator</span>
+            </button>
+            <button class="tab-btn" data-tab="about-tab" aria-label="Open About FIRE">
+                <i data-lucide="book-open"></i><span>What is FIRE?</span>
+            </button>
+        </nav>
+        <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+    </header>
+
+    <main class="app-container">
+        <!-- TAB 1: CALCULATOR -->
+        <div id="calc-tab-content" class="tab-content active-content">
+            <div class="calculator-layout">
+                <!-- Input section -->
+                <section class="control-panel glass-card">
+                    <h2><i data-lucide="sliders" class="section-icon"></i>Adjust Parameters</h2>
+
+                    <!-- FIRE Path Selector -->
+                    <div class="fire-path-selector" role="group" aria-label="Select your FIRE path">
+                        <button class="path-chip active" data-path="traditional" data-expenses="60000" data-swr="4" aria-pressed="true" data-tooltip="Standard retirement matching your current lifestyle. Spend $40K–$80K/year.">
+                            <img src="Assets/fire_avatar.svg?v=2" alt="" class="chip-avatar">
+                            <span>Traditional</span>
+                        </button>
+                        <button class="path-chip" data-path="lean" data-expenses="25000" data-swr="3.5" aria-pressed="false" data-tooltip="Minimalist lifestyle. Spend under $40K/year — strict budgets, maximum savings.">
+                            <img src="Assets/leanfire_avatar.svg?v=2" alt="" class="chip-avatar">
+                            <span>Lean</span>
+                        </button>
+                        <button class="path-chip" data-path="fat" data-expenses="120000" data-swr="4" aria-pressed="false" data-tooltip="Luxury retirement. Spend $100K+/year on travel, dining, and high-end living.">
+                            <img src="Assets/fatfire_avatar.svg?v=2" alt="" class="chip-avatar">
+                            <span>Fat</span>
+                        </button>
+                        <button class="path-chip" data-path="barista" data-expenses="40000" data-swr="3" aria-pressed="false" data-tooltip="Partial independence. Work part-time for extra income and healthcare benefits.">
+                            <img src="Assets/barista_avatar.svg?v=2" alt="" class="chip-avatar">
+                            <span>Barista</span>
+                        </button>
+                        <button class="path-chip" data-path="expat" data-expenses="30000" data-swr="3.5" aria-pressed="false" data-tooltip="Retire abroad in a low-cost country. Your money stretches much further overseas.">
+                            <img src="Assets/expatfire.svg?v=2" alt="" class="chip-avatar">
+                            <span>Expat</span>
+                        </button>
+                    </div>
+
+                    <form id="fire-form" onsubmit="event.preventDefault();">
+                        <div class="input-grid">
+                            <!-- Current Age -->
+                            <div class="input-group">
+                                <div class="label-row">
+                                    <label for="current-age-num">Current Age</label>
+                                    <div class="input-with-indicator text-input-small">
+                                        <input type="text" id="current-age-num" value="30" inputmode="numeric">
+                                    </div>
+                                </div>
+                                <div class="slider-row">
+                                    <input type="range" id="current-age" min="18" max="80" value="30" class="fire-slider">
+                                </div>
+                            </div>
+
+                            <!-- Target Retirement Age -->
+                            <div class="input-group">
+                                <div class="label-row">
+                                    <label for="target-age-num">Target Retire Age</label>
+                                    <div class="input-with-indicator text-input-small">
+                                        <input type="text" id="target-age-num" value="55" inputmode="numeric">
+                                    </div>
+                                </div>
+                                <div class="slider-row">
+                                    <input type="range" id="target-age" min="25" max="90" value="55" class="fire-slider">
+                                </div>
+                            </div>
+
+                            <!-- Current Net Worth -->
+                            <div class="input-group full-width">
+                                <div class="label-row">
+                                    <label for="net-worth">Current Net Worth / Savings ($)</label>
+                                    <div class="input-with-indicator">
+                                        <span class="prefix">$</span>
+                                        <input type="text" id="net-worth" value="100,000" inputmode="numeric">
+                                    </div>
+                                </div>
+                                <input type="range" id="net-worth-slider" min="0" max="2000000" step="10000" value="100000" class="fire-slider">
+                            </div>
+
+                            <!-- Annual Savings Contribution -->
+                            <div class="input-group full-width">
+                                <div class="label-row">
+                                    <label for="annual-savings">Annual Savings ($)</label>
+                                    <div class="input-with-indicator">
+                                        <span class="prefix">$</span>
+                                        <input type="text" id="annual-savings" value="24,000" inputmode="numeric">
+                                    </div>
+                                </div>
+                                <input type="range" id="annual-savings-slider" min="0" max="200000" step="2000" value="24000" class="fire-slider">
+                            </div>
+
+                            <!-- Annual Expenses in Retirement -->
+                            <div class="input-group full-width">
+                                <div class="label-row">
+                                    <label for="annual-expenses">Annual Expenses in Retirement ($)</label>
+                                    <div class="input-with-indicator">
+                                        <span class="prefix">$</span>
+                                        <input type="text" id="annual-expenses" value="50,000" inputmode="numeric">
+                                    </div>
+                                </div>
+                                <input type="range" id="annual-expenses-slider" min="5000" max="300000" step="5000" value="50000" class="fire-slider">
+                            </div>
+
+                            <!-- Expected Investment Return -->
+                            <div class="input-group">
+                                <div class="label-row">
+                                    <label for="investment-return-num">Est. Annual Return (%)</label>
+                                    <div class="input-with-indicator text-input-small">
+                                        <input type="text" id="investment-return-num" value="8" inputmode="decimal">
+                                        <span class="suffix">%</span>
+                                    </div>
+                                </div>
+                                <div class="slider-row">
+                                    <input type="range" id="investment-return" min="1" max="15" step="0.5" value="8" class="fire-slider">
+                                </div>
+                            </div>
+
+                            <!-- Safe Withdrawal Rate -->
+                            <div class="input-group">
+                                <div class="label-row">
+                                    <label for="swr-num">Safe Withdrawal Rate (SWR %)</label>
+                                    <div class="input-with-indicator text-input-small">
+                                        <input type="text" id="swr-num" value="4" inputmode="decimal">
+                                        <span class="suffix">%</span>
+                                    </div>
+                                </div>
+                                <div class="slider-row">
+                                    <input type="range" id="swr" min="2" max="7" step="0.1" value="4" class="fire-slider">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Output section -->
+                <section class="results-panel">
+                    <!-- Summary Metric Cards -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass-card accent-emerald">
+                            <div class="card-icon">
+                                <i data-lucide="target"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Your FIRE Target</h3>
+                                <p class="metric-value" id="fire-number">$1,250,000</p>
+                                <p class="metric-desc">Based on SWR and Expenses</p>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card accent-indigo">
+                            <div class="card-icon">
+                                <i data-lucide="calendar"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Target Achieved In</h3>
+                                <p class="metric-value" id="fire-time">19 Years</p>
+                                <p class="metric-desc" id="fire-status">At age 49</p>
+                            </div>
+                        </div>
+
+                        <div class="metric-card glass-card accent-purple">
+                            <div class="card-icon">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3>Forecasted Net Worth</h3>
+                                <p class="metric-value" id="retire-value">$1,387,422</p>
+                                <p class="metric-desc" id="retire-value-desc">At target age 55</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualization -->
+                    <div class="chart-container glass-card">
+                        <div class="chart-header">
+                            <h2><i data-lucide="line-chart" class="section-icon"></i>Wealth Projections</h2>
+                            <div class="chart-legend-custom">
+                                <span class="legend-item"><span class="legend-color color-networth"></span>Projected Wealth</span>
+                                <span class="legend-item"><span class="legend-color color-target"></span>FIRE Target</span>
+                            </div>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <canvas id="projectionChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- TAB 2: ABOUT FIRE -->
+        <div id="about-tab-content" class="tab-content">
+            <div class="about-layout">
+                <section class="about-hero glass-card">
+                    <div class="about-hero-content">
+                        <h2><i data-lucide="flame" class="section-icon hero-flame"></i>Understanding FIRE</h2>
+                        <p class="subtitle">Financial Independence, Retire Early (FIRE) is a movement focused on smart saving and investing, allowing you to buy back your time and choose whether, when, and how you want to work.</p>
+                    </div>
+                </section>
+
+                <div class="about-grid">
+                    <!-- Explain what FIRE is -->
+                    <section class="about-card glass-card">
+                        <h3><i data-lucide="help-circle"></i>What is FIRE?</h3>
+                        <p>At its core, FIRE is about freedom. By increasing the gap between what you earn and what you spend, you save a significant portion of your income and invest it in stable assets (like low-cost index funds).</p>
+                        <p>Once your investment portfolio grows large enough that you can safely live off the returns indefinitely without ever touching the principal, you have achieved <strong>Financial Independence</strong>.</p>
+                    </section>
+
+                    <!-- Concrete Persona Example -->
+                    <section class="about-card glass-card">
+                        <h3><i data-lucide="user"></i>How It Works: Sarah's Example</h3>
+                        <p><strong>Sarah's Profile:</strong> Age 30. She earns $90,000 post-tax, spends $40,000 annually on her lifestyle, and saves the remaining $50,000.</p>
+                        <p><strong>Her Goal:</strong> Sarah wants to achieve financial freedom. To find her target <strong>FIRE Number</strong>, she simply divides her annual expenses ($40,000) by her Safe Withdrawal Rate (4%, or 0.04):</p>
+                        <div class="equation">
+                            $40,000 ÷ 0.04 = $1,000,000
+                        </div>
+                        <p>Starting with $100,000 in savings and contributing $50,000 each year at an 8% return, Sarah will reach her target of $1,000,000 in <strong>12 years</strong> at <strong>age 42</strong>.</p>
+                    </section>
+                </div>
+
+                <!-- Compare the different FIRE paths -->
+                <section class="comparison-section glass-card">
+                    <h3><i data-lucide="git-branch"></i>Choose Your FIRE Path</h3>
+                    <div class="paths-grid">
+                        <div class="path-card">
+                            <img src="Assets/fire_avatar.svg?v=2" alt="Traditional FIRE Illustration" class="path-illustration glow-traditional">
+                            <div class="path-badge type-traditional">Traditional FIRE</div>
+                            <p class="path-description">Aiming to retire with a nest egg that matches your current standard of living. Usually assumes an annual retirement spend of $40,000 to $80,000 based on standard expenses.</p>
+                        </div>
+                        <div class="path-card">
+                            <img src="Assets/leanfire_avatar.svg?v=2" alt="Lean FIRE Illustration" class="path-illustration glow-lean">
+                            <div class="path-badge type-lean">Lean FIRE</div>
+                            <p class="path-description">A minimalist approach. Aiming for an annual spend of $40,000 or less. Requires strict budgeting and a highly optimized, low-cost lifestyle.</p>
+                        </div>
+                        <div class="path-card">
+                            <img src="Assets/fatfire_avatar.svg?v=2" alt="Fat FIRE Illustration" class="path-illustration glow-fat">
+                            <div class="path-badge type-fat">Fat FIRE</div>
+                            <p class="path-description">An abundant approach. Aiming for an annual spend of $100,000+ to maintain a luxurious lifestyle, travel extensively, or live in high-cost-of-living metropolitan areas.</p>
+                        </div>
+                        <div class="path-card">
+                            <img src="Assets/barista_avatar.svg?v=2" alt="Barista FIRE Illustration" class="path-illustration glow-barista">
+                            <div class="path-badge type-barista">Barista FIRE</div>
+                            <p class="path-description">Achieving partial independence. You save enough to cover core survival, then quit your high-stress job to work part-time or in a passion field for side income and healthcare benefits.</p>
+                        </div>
+                        <div class="path-card">
+                            <img src="Assets/expatfire.svg?v=2" alt="Expat FIRE Illustration" class="path-illustration glow-expat">
+                            <div class="path-badge type-expat">Expat FIRE</div>
+                            <p class="path-description">Geographic arbitrage. Retiring early by relocating to a country with a much lower cost of living, allowing your retirement funds to stretch significantly further.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>Ignite FIRE Calculator &copy; <span id="current-year">2026</span></p>
+    </footer>
+
+    <!-- Increment version to v8 to force CDN cache invalidation -->
+    <script src="app.js?v=11"></script>
+</body>
+</html>
